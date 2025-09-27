@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require("mongoose")
 const path = require("path");
 require('dotenv').config();
-
+const cors = require('cors');
+// يجب أن يكون هذا السطر قبل تعريف أي مسارات
 
 const authRouter = require("./routers/auth")
 const bookRouter= require("./routers/book");
@@ -11,7 +12,7 @@ const packageController = require("./controller/packageController"); // استي
 
 const app = express();
 
-
+app.use(cors()); 
 app.use(express.json());
 
 
