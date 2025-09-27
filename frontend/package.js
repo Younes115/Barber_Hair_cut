@@ -4,7 +4,7 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 // Function to fetch packages from the database
 async function fetchPackages() {
     try {
-        const response = await fetch('/api/packages');
+        const response = await fetch('https://barberhaircut-production.up.railway.app/api/packages');
         if (!response.ok) {
             throw new Error('Failed to fetch packages from the database.');
         }
@@ -151,7 +151,7 @@ async function handleAddPackage(event) {
     formData.append('icon', iconFile); // أضف الملف إلى FormData
 
     try {
-        const response = await fetch('/api/admin/package', {
+        const response = await fetch('https://barberhaircut-production.up.railway.app/api/admin/package', {
             method: 'POST',
             headers: {
                 // لا تحدد 'Content-Type'، المتصفح سيقوم بذلك تلقائيًا مع FormData
@@ -191,7 +191,7 @@ async function handleEditPackage(event) {
     }
 
     try {
-        const response = await fetch(`/api/admin/package/${id}`, {
+       const response = await fetch(`https://barberhaircut-production.up.railway.app/api/admin/package/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -223,7 +223,7 @@ async function handleDeletePackage(id) {
     }
 
     try {
-        const response = await fetch(`/api/admin/package/${id}`, {
+       const response = await fetch(`https://barberhaircut-production.up.railway.app/api/admin/package/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -251,7 +251,7 @@ async function checkAdminStatus() {
     }
 
     try {
-        const response = await fetch('/api/auth/profile', {
+        const response = await fetch('https://barberhaircut-production.up.railway.app/api/auth/profile', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });

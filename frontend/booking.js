@@ -63,7 +63,7 @@ async function handleBookingForm(event) {
     }
 
     try {
-        const response = await fetch('/api/booking', {
+        const response = await fetch('https://barberhaircut-production.up.railway.app/api/booking', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

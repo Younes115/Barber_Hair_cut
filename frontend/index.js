@@ -4,7 +4,7 @@ function onSignIn(response) {
     
     console.log("ID Token:", id_token);
 
-    fetch('/api/auth/google', {
+    fetch('https://barberhaircut-production.up.railway.app/api/auth/google', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ function onSignIn(response) {
 // Function to initialize Google Sign-In and fetch the client ID
 async function initializeGoogleSignIn() {
     try {
-        const response = await fetch('/config');
+        const response = await fetch('https://barberhaircut-production.up.railway.app/config');
         if (!response.ok) {
             throw new Error('Failed to fetch Google Client ID from server.');
         }
@@ -75,7 +75,7 @@ async function checkAdminStatus() {
     if (!token) return;
 
     try {
-        const response = await fetch('/api/auth/profile', {
+        const response = await fetch('https://barberhaircut-production.up.railway.app/api/auth/profile', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -97,7 +97,7 @@ async function getDailyBookings() {
     }
 
     try {
-        const response = await fetch('/api/admin/booking/today', {
+        const response = await fetch('https://barberhaircut-production.up.railway.app/api/admin/booking/today', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
