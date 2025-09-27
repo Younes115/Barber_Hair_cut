@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Package</title>
+    <link rel='stylesheet' type='text/css' media='screen' href='./style.css'>
+</head>
+
+<body>
+    <nav id="navbar">
+        <ul>
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="./gallery.html">gallery</a></li>
+            <li><a href="./package.html">packages</a></li>
+            <li><a href="./contact.html">Contact</a></li>
+        </ul>
+        <div id="logout-container" style="display:none;">
+            <button class="btn" id="logout-btn">Log Out</button>
+        </div>
+    </nav>
+
+    <section id="packages" class="packages-section">
+        <h2>Our Services</h2>
+        <div id="admin-package-controls" style="display:none;">
+            <button class="btn" id="add-package-btn">Add New Package</button>
+        </div>
+        <div class="packages-container">
+        </div>
+        <button id="book-now-btn" class="btn">Book Now</button>
+    </section>
+
+    <div id="add-package-modal" class="form-modal">
+        <div class="form-container">
+            <h3>Add New Package</h3>
+            <form id="add-package-form">
+                <input type="text" id="add-package-name" placeholder="Package Name" required>
+                <input type="text" id="add-package-description" placeholder="Description" required>
+                <input type="number" id="add-package-price" placeholder="Price" required>
+                <input type="file" id="add-package-icon" accept="image/*" required>
+                <button type="submit" class="btn">Save Package</button>
+                <button type="button" class="btn" id="cancel-add-btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-package-modal" class="form-modal">
+        <div class="form-container">
+            <h3>Edit Package</h3>
+            <form id="edit-package-form">
+                <input type="hidden" id="edit-package-id">
+                <input type="text" id="edit-package-name" placeholder="Package Name" required>
+                <input type="text" id="edit-package-description" placeholder="Description" required>
+                <input type="number" id="edit-package-price" placeholder="Price" required>
+                <input type="text" id="edit-package-icon" placeholder="Icon URL">
+                <button type="submit" class="btn">Save Changes</button>
+                <button type="button" class="btn" id="cancel-edit-btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="./package.js"></script>
+    <script src="./logout.js"></script>
+</body>
+
+</html>
