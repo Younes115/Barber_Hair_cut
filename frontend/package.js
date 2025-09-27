@@ -40,8 +40,7 @@ function renderPackages(packages, isAdmin) {
         packageBox.className = 'package-box';
         packageBox.dataset.id = service._id;
         packageBox.innerHTML = `
-            <img src="${service.icon}" alt="${service.name} Icon" class="package-icon">
-            <h3>${service.name}</h3>
+           <img src="https://barberhaircut-production.up.railway.app/${service.icon}" alt="${service.name} Icon" class="package-icon">
             <p>${service.description}</p>
             <p class="price">Price: ${service.price} EGP</p>
             <button class="btn add-to-cart-btn">Add to Cart</button>
