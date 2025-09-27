@@ -12,7 +12,7 @@ const packageController = require("./controller/packageController"); // استي
 
 const app = express();
 
-app.use(cors()); 
+app.use(cors());
 app.use(express.json());
 
 
