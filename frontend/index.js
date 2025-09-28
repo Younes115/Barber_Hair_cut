@@ -69,14 +69,14 @@ async function initializeGoogleSignIn() {
     }
 }
 
-// دالة لمعالجة تسجيل الخروج (يجب أن تكون مدمجة هنا)
+// دالة لمعالجة تسجيل الخروج (مدمجة)
 function logout() {
     localStorage.removeItem('userToken');
     alert('Logged out successfully!');
     window.location.href = './index.html';
 }
 
-// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة (مطلوبة هنا)
+// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة (مدمجة)
 function checkLoginStatus() {
     const token = localStorage.getItem('userToken');
     const loginButton = document.getElementById('google-login-button');
@@ -129,10 +129,8 @@ async function getDailyBookings() {
         }
         const bookings = await response.json();
         
-        // حفظ بيانات الحجوزات في localStorage
         localStorage.setItem('dailyBookings', JSON.stringify(bookings));
         
-        // نقل المستخدم إلى صفحة عرض الحجوزات
         window.location.href = './daily-bookings.html';
         
     } catch (error) {

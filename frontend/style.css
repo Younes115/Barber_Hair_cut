@@ -21,22 +21,22 @@
       display: flex;
       justify-content: space-between; 
       align-items: center; 
-      z-index: 1000; /* الأولوية القصوى */
+      z-index: 1000; /* الأولوية القصوى لعدم التداخل */
   }
 
   nav ul {
       list-style: none;
       padding: 0;
       margin: 0;
-      display: flex;
+      display: flex; /* إظهار القائمة أفقياً على الكمبيوتر */
       justify-content: center;
       gap: 25px;
-      transition: all 0.3s ease-in-out; /* إضافة انتقال سلس */
+      transition: all 0.3s ease-in-out; 
   }
 
   /* زر القائمة المخفي افتراضياً */
   .menu-toggle {
-      display: none;
+      display: none; /* إخفاء زر الهمبرغر على الكمبيوتر */
       cursor: pointer;
       font-size: 30px;
       color: white;
@@ -58,11 +58,11 @@
       color: #f0b400;
   }
 
-  /* 2. إضافة مسافة بادئة للأقسام لتجنب تداخل الـ Navbar */
+  /* 2. إضافة مسافة بادئة للأقسام لحل مشكلة التداخل */
   section {
       width: 100vw;
       min-height: 100vh;
-      padding-top: 80px; /* مسافة كافية لتجاوز الـ Navbar الثابت */
+      padding-top: 80px; /* **الحل: مسافة كافية لتجاوز الـ Navbar الثابت** */
       padding-bottom: 50px;
       padding-left: 20px;
       padding-right: 20px;
@@ -302,20 +302,21 @@
     /* 1. إظهار زر القائمة (الهمبرغر) */
     .menu-toggle {
         display: block; 
+        order: 1; /* زر الهمبرغر يظهر أولاً */
     }
 
     /* 2. إعدادات الـ Navbar على الموبايل */
     #navbar {
-        flex-direction: row; /* إبقاء العناصر أفقية في سطر واحد لتوفير المساحة */
+        flex-direction: row; 
         flex-wrap: wrap; 
         height: auto;
         padding-top: 10px;
         padding-bottom: 10px;
     }
 
-    /* إخفاء القائمة الأصلية */
+    /* 3. إخفاء القائمة الأصلية على شاشات الموبايل */
     nav ul {
-        display: none; 
+        display: none; /* القائمة مخفية افتراضياً */
         position: absolute;
         top: 60px; /* أسفل الـ Navbar */
         left: 0;
@@ -328,24 +329,23 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     }
     
-    /* عند فتح القائمة (يتم إضافة هذا الكلاس بواسطة JavaScript) */
+    /* 4. عند فتح القائمة (يتم إضافة هذا الكلاس بواسطة JavaScript) */
     nav ul.open {
         display: flex;
     }
 
-    /* 3. ترتيب عناصر الـ Navbar */
+    /* 5. ترتيب عناصر الـ Navbar */
     #logout-container {
-        /* إبقاء زر الخروج في الزاوية */
         margin-left: 15px;
+        order: 3; /* يظهر زر الخروج ثالثاً على نفس السطر */
     }
 
-    /* 4. إصلاحات عامة للصفحة والباكدجات */
+    /* 6. إصلاح الهامش العلوي (لحل مشكلة تغطية المحتوى) */
     section {
-        padding: 30px 15px;
-        padding-top: 80px; /* الحفاظ على هامش التداخل */
+        padding-top: 80px; 
     }
     
-    /* جعل الباكدجات تظهر بعرض أكبر */
+    /* 7. إصلاحات عامة للصفحة والباكدجات */
     .packages-container {
         flex-direction: column;
         gap: 20px;
@@ -356,7 +356,6 @@
         max-width: none;
     }
     
-    /* إصلاحات الـ Gallery */
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -364,6 +363,6 @@
 
 @media (max-width: 480px) {
     .gallery-grid {
-        grid-template-columns: 1fr; /* صورة واحدة في الصف */
+        grid-template-columns: 1fr;
     }
 }

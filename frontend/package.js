@@ -1,14 +1,14 @@
 // Global cart variable
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// دالة لمعالجة تسجيل الخروج
+// دالة لمعالجة تسجيل الخروج (مدمجة)
 function logout() {
     localStorage.removeItem('userToken');
     alert('Logged out successfully!');
     window.location.href = './index.html';
 }
 
-// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة
+// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة (مدمجة)
 function checkLoginStatus() {
     const token = localStorage.getItem('userToken');
     const logoutContainer = document.getElementById('logout-container');
@@ -285,7 +285,7 @@ async function checkAdminStatus() {
 }
 // Main DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    fetchPackages(); // Fetch packages from the database on page load
+    fetchPackages();
     checkLoginStatus(); // التحقق عند تحميل الصفحة
     
     // 1. ربط زر تسجيل الخروج

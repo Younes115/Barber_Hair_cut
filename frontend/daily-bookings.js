@@ -1,4 +1,4 @@
-// دالة لمعالجة تسجيل الخروج (مكررة ولكن ضرورية لكل ملف)
+// دالة لمعالجة تسجيل الخروج (مدمجة)
 function logout() {
     localStorage.removeItem('userToken');
     alert('Logged out successfully!');

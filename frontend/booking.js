@@ -78,7 +78,7 @@ async function handleBookingForm(event) {
             form.reset();
             localStorage.removeItem('cart');
             renderCart();
-             window.location.href = './index.html'; 
+            window.location.href = './index.html'; // العودة للصفحة الرئيسية
         } else {
             alert(`Error: ${result.message}`);
         }
@@ -121,32 +121,55 @@ function generateTimeOptions() {
     }
 }
 
+// دالة لمعالجة تسجيل الخروج
+function logout() {
+    localStorage.removeItem('userToken');
+    alert('Logged out successfully!');
+    window.location.href = './index.html';
+}
+
+// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة
+function checkLoginStatus() {
+    const token = localStorage.getItem('userToken');
+    const logoutContainer = document.getElementById('logout-container');
+
+    if (token) {
+        if (logoutContainer) logoutContainer.style.display = 'block';
+    } else {
+        if (logoutContainer) logoutContainer.style.display = 'none';
+    }
+    return token ? true : false;
+}
+
+
 // Main DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
+    // التحقق من تسجيل الدخول أولاً
+    if (!checkLoginStatus()) {
         alert('Please log in to view this page.');
         window.location.href = './index.html';
-    } else {
-        renderCart();
-        generateTimeOptions();
-        const bookingForm = document.getElementById('booking-form');
-        if (bookingForm) {
-            bookingForm.addEventListener('submit', handleBookingForm);
-        }
+        return;
     }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (الكود الأصلي لـ checkLoginStatus و initializeGoogleSignIn) ...
 
+    renderCart();
+    generateTimeOptions();
+    
+    const bookingForm = document.getElementById('booking-form');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', handleBookingForm);
+    }
+
+    // ربط زر تسجيل الخروج وتفعيل قائمة الهمبرغر
+    const logoutButton = document.getElementById('logout-btn');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
     const menuToggle = document.getElementById('mobile-menu');
-    const navMenu = document.querySelector('#navbar ul'); // استخدم مُحدد أكثر دقة
+    const navMenu = document.querySelector('#navbar ul');
 
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('open');
         });
     }
-
-    // ... (باقي كود DOMContentLoaded)
 });
