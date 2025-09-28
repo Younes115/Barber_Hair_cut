@@ -136,3 +136,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (الكود الأصلي لـ checkLoginStatus و initializeGoogleSignIn) ...
+
+    const menuToggle = document.getElementById('mobile-menu');
+    const navMenu = document.querySelector('#navbar ul'); // استخدم مُحدد أكثر دقة
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('open');
+        });
+    }
+
+    // ... (باقي كود DOMContentLoaded)
+});
