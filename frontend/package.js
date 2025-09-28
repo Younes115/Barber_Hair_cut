@@ -1,6 +1,26 @@
 // Global cart variable
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+// دالة لمعالجة تسجيل الخروج
+function logout() {
+    localStorage.removeItem('userToken');
+    alert('Logged out successfully!');
+    window.location.href = './index.html';
+}
+
+// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة
+function checkLoginStatus() {
+    const token = localStorage.getItem('userToken');
+    const logoutContainer = document.getElementById('logout-container');
+
+    if (token) {
+        if (logoutContainer) logoutContainer.style.display = 'block';
+    } else {
+        if (logoutContainer) logoutContainer.style.display = 'none';
+    }
+    return token ? true : false;
+}
+
 // Function to fetch packages from the database
 async function fetchPackages() {
     try {
@@ -88,7 +108,6 @@ function renderPackages(packages, isAdmin) {
             });
         });
         
-        // Add event listener for the "Add New Package" button
         document.getElementById('add-package-btn').addEventListener('click', () => {
             document.getElementById('add-package-modal').style.display = 'flex';
         });
@@ -97,7 +116,6 @@ function renderPackages(packages, isAdmin) {
             document.getElementById('add-package-modal').style.display = 'none';
         });
 
-        // Add event listener for the form submission
         document.getElementById('add-package-form').addEventListener('submit', handleAddPackage);
         document.getElementById('edit-package-form').addEventListener('submit', handleEditPackage);
         document.getElementById('cancel-edit-btn').addEventListener('click', () => {
@@ -135,7 +153,7 @@ async function handleAddPackage(event) {
     const name = form.querySelector('#add-package-name').value;
     const description = form.querySelector('#add-package-description').value;
     const price = form.querySelector('#add-package-price').value;
-    const iconFile = form.querySelector('#add-package-icon').files[0]; // احصل على الملف
+    const iconFile = form.querySelector('#add-package-icon').files[0];
 
     const token = localStorage.getItem('userToken');
     if (!token) {
@@ -143,28 +161,26 @@ async function handleAddPackage(event) {
         return;
     }
     
-    // إنشاء كائن FormData لإرسال الملف
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
     formData.append('price', price);
-    formData.append('icon', iconFile); // أضف الملف إلى FormData
+    formData.append('icon', iconFile);
 
     try {
         const response = await fetch('https://barberhaircut-production.up.railway.app/api/admin/package', {
             method: 'POST',
             headers: {
-                // لا تحدد 'Content-Type'، المتصفح سيقوم بذلك تلقائيًا مع FormData
                 'Authorization': `Bearer ${token}`
             },
-            body: formData // أرسل كائن FormData
+            body: formData
         });
 
         if (response.ok) {
             alert("Package added successfully!");
             form.reset();
             document.getElementById('add-package-modal').style.display = 'none';
-            fetchPackages(); // Refresh the list of packages
+            fetchPackages();
         } else {
             const error = await response.json();
             alert(`Error adding package: ${error.message}`);
@@ -203,7 +219,7 @@ async function handleEditPackage(event) {
         if (response.ok) {
             alert("Package updated successfully!");
             document.getElementById('edit-package-modal').style.display = 'none';
-            fetchPackages(); // Refresh the list of packages
+            fetchPackages();
         } else {
             const error = await response.json();
             alert(`Error updating package: ${error.message}`);
@@ -232,7 +248,7 @@ async function handleDeletePackage(id) {
 
         if (response.ok) {
             alert("Package deleted successfully!");
-            fetchPackages(); // Refresh the list of packages
+            fetchPackages();
         } else {
             const error = await response.json();
             alert(`Error deleting package: ${error.message}`);
@@ -267,22 +283,24 @@ async function checkAdminStatus() {
         return false;
     }
 }
+// Main DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    // ... (الكود الأصلي لـ checkLoginStatus و initializeGoogleSignIn) ...
-
+    fetchPackages(); // Fetch packages from the database on page load
+    checkLoginStatus(); // التحقق عند تحميل الصفحة
+    
+    // 1. ربط زر تسجيل الخروج
+    const logoutButton = document.getElementById('logout-btn');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
+    
+    // 2. تفعيل قائمة الهمبرغر
     const menuToggle = document.getElementById('mobile-menu');
-    const navMenu = document.querySelector('nav ul');
+    const navMenu = document.querySelector('#navbar ul');
 
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('open');
         });
     }
-
-});
-
-
-// Main DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', () => {
-    fetchPackages(); // Fetch packages from the database on page load
 });

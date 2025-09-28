@@ -1,6 +1,26 @@
-document.addEventListener('DOMContentLoaded', () => {
+// دالة لمعالجة تسجيل الخروج (مكررة ولكن ضرورية لكل ملف)
+function logout() {
+    localStorage.removeItem('userToken');
+    alert('Logged out successfully!');
+    window.location.href = './index.html';
+}
+
+// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة
+function checkLoginStatus() {
     const token = localStorage.getItem('userToken');
-    if (!token) {
+    const logoutContainer = document.getElementById('logout-container');
+
+    if (token) {
+        if (logoutContainer) logoutContainer.style.display = 'block';
+    } else {
+        if (logoutContainer) logoutContainer.style.display = 'none';
+    }
+    return token ? true : false;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // التحقق من تسجيل الدخول وإعادة التوجيه إذا لزم الأمر
+    if (!checkLoginStatus()) {
         alert('Please log in to view this page.');
         window.location.href = './index.html';
         return;
@@ -28,18 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Clear localStorage to prevent stale data on future visits
     localStorage.removeItem('dailyBookings');
-});
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (الكود الأصلي لـ checkLoginStatus و initializeGoogleSignIn) ...
 
+    // تفعيل الـ logout وزر القائمة (Hamburger Menu)
+    const logoutButton = document.getElementById('logout-btn');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
     const menuToggle = document.getElementById('mobile-menu');
-    const navMenu = document.querySelector('nav ul');
+    const navMenu = document.querySelector('#navbar ul');
 
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('open');
         });
     }
-
-    // ... (باقي كود DOMContentLoaded)
 });

@@ -24,7 +24,7 @@ function onSignIn(response) {
         if (data.jwtToken) {
             localStorage.setItem('userToken', data.jwtToken);
             alert('Login successful!');
-             window.location.reload();
+            window.location.reload(); // إعادة تحميل الصفحة بعد تسجيل الدخول
         } else {
             alert('Login failed. No token received from server.');
         }
@@ -66,6 +66,28 @@ async function initializeGoogleSignIn() {
         );
     } catch (error) {
         console.error('Initialization failed:', error);
+    }
+}
+
+// دالة لمعالجة تسجيل الخروج (يجب أن تكون مدمجة هنا)
+function logout() {
+    localStorage.removeItem('userToken');
+    alert('Logged out successfully!');
+    window.location.href = './index.html';
+}
+
+// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة (مطلوبة هنا)
+function checkLoginStatus() {
+    const token = localStorage.getItem('userToken');
+    const loginButton = document.getElementById('google-login-button');
+    const logoutContainer = document.getElementById('logout-container');
+
+    if (token) {
+        if (loginButton) loginButton.style.display = 'none';
+        if (logoutContainer) logoutContainer.style.display = 'block';
+    } else {
+        if (loginButton) loginButton.style.display = 'block';
+        if (logoutContainer) logoutContainer.style.display = 'none';
     }
 }
 
@@ -118,27 +140,33 @@ async function getDailyBookings() {
     }
 }
 
+// دمج كل الـ Event Listeners في كتلة واحدة
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. تفعيل تسجيل الدخول و التحقق من حالة المستخدم
     if (document.getElementById("google-login-button")) {
         initializeGoogleSignIn();
     }
+    checkLoginStatus(); 
     checkAdminStatus(); 
+    
+    // 2. ربط زر تسجيل الخروج وزر حجوزات اليوم
+    const logoutButton = document.getElementById('logout-btn');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
+
     const viewBookingsBtn = document.getElementById('view-bookings-btn');
     if (viewBookingsBtn) {
         viewBookingsBtn.addEventListener('click', getDailyBookings);
     }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (الكود الأصلي لـ checkLoginStatus و initializeGoogleSignIn) ...
-
+    
+    // 3. تفعيل قائمة الهمبرغر
     const menuToggle = document.getElementById('mobile-menu');
-    const navMenu = document.querySelector('nav ul');
+    const navMenu = document.querySelector('#navbar ul');
 
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('open');
         });
     }
-
-    // ... (باقي كود DOMContentLoaded)
 });
