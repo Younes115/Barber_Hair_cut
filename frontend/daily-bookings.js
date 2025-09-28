@@ -29,3 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear localStorage to prevent stale data on future visits
     localStorage.removeItem('dailyBookings');
 });
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (الكود الأصلي لـ checkLoginStatus و initializeGoogleSignIn) ...
+
+    const menuToggle = document.getElementById('mobile-menu');
+    const navMenu = document.querySelector('nav ul');
+
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('open');
+        });
+    }
+
+    // ... (باقي كود DOMContentLoaded)
+});

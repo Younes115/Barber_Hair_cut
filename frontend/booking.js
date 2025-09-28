@@ -78,6 +78,7 @@ async function handleBookingForm(event) {
             form.reset();
             localStorage.removeItem('cart');
             renderCart();
+             window.location.href = './index.html'; 
         } else {
             alert(`Error: ${result.message}`);
         }

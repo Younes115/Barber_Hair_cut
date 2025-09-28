@@ -10,45 +10,78 @@
   }
 
   /* 1. تحديث Navbar لحل مشكلة التداخل والاستجابة */
-  #navbar{
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px 20px; 
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 60px; /* ارتفاع ثابت */
-      display: flex;
-      justify-content: space-between; 
-      align-items: center; 
-      z-index: 1000; /* طبقة علوية */
-  }
+ /* ... (الكود الأصلي لـ body و * ) ... */
 
-  nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-  }
+/* 1. تحديث Navbar للقائمة المدمجة (Flexbox) */
+#navbar{
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    z-index: 1000; 
+}
 
-  /* يدفع زر تسجيل الخروج إلى أقصى اليمين */
-  #logout-container {
-      margin-left: auto; 
-  }
+/* 2. إخفاء القائمة وزر الإغلاق افتراضياً */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    /* الخصائص الأساسية للإعداد على أجهزة الكمبيوتر */
+}
 
-  nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s;
-  }
+/* 3. زر الهمبرغر (Hamburger) المخفي افتراضياً */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: white;
+}
 
-  nav a:hover {
-      color: #f0b400;
-  }
+/* ... (باقي الأنماط مثل nav a و section) ... */
 
+
+/* --- Media Queries لإصلاح شكل شريط التنقل على الموبايل --- */
+@media (max-width: 768px) {
+    /* 1. إظهار زر الهمبرغر وإخفاء القائمة الأصلية */
+    .menu-toggle {
+        display: block; /* إظهار الزر على شاشات الموبايل */
+        order: 2; /* تأكد من وضعه في ترتيب مناسب */
+    }
+
+    /* إخفاء القائمة الأصلية على شاشات الموبايل */
+    nav ul {
+        display: none; 
+        position: absolute;
+        top: 60px; /* أسفل الـ Navbar */
+        left: 0;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 10px;
+        z-index: 999;
+    }
+
+    /* 2. تنسيق ظهور القائمة المفتوحة */
+    nav ul.open {
+        display: flex; /* إظهار القائمة عند إضافة كلاس 'open' */
+    }
+
+    /* 3. تعديل زر تسجيل الخروج ليكون جزءاً من شريط التنقل الأصلي */
+    #logout-container {
+        order: 3;
+        margin-left: 15px;
+    }
+}
   /* 2. إضافة padding للأقسام لتجنب تداخل الـ Navbar */
   section {
       width: 100vw;
