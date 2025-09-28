@@ -262,14 +262,25 @@ async function handleAddPackage(event) {
     }
 }
 // Function to handle the form submission for editing a package
+// package.js
+
+// ... (الدوال الأخرى) ...
+
+// Function to handle the form submission for editing a package
 async function handleEditPackage(event) {
     event.preventDefault();
     const form = document.getElementById('edit-package-form');
+    
     const id = form.querySelector('#edit-package-id').value;
+    // تصحيح: يجب أن يكون #edit-package-name (بدلاً من #edit-package-name)
     const name = form.querySelector('#edit-package-name').value;
     const description = form.querySelector('#edit-package-description').value;
     const price = form.querySelector('#edit-package-price').value;
-    const icon = form.querySelector('#edit-package-icon').value;
+    
+    // تصحيح: يجب أن يكون #edit-package-icon-file (الذي يحتوي على الملف)
+    const iconFile = form.querySelector('#edit-package-icon-file').files[0]; 
+    // تصحيح: يجب أن يكون #edit-package-current-icon (الذي يحتوي على المسار القديم)
+    const currentIconPath = form.querySelector('#edit-package-current-icon').value; 
 
     const token = localStorage.getItem('userToken');
     if (!token) {
@@ -277,20 +288,34 @@ async function handleEditPackage(event) {
         return;
     }
 
+    // إنشاء كائن FormData لإرسال الملفات والبيانات
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('description', description, price);
+    formData.append('price', price);
+    
+    if (iconFile) {
+        // إذا تم اختيار ملف جديد، أرسله
+        formData.append('icon', iconFile);
+    } else {
+        // إذا لم يتم اختيار ملف جديد، أرسل المسار القديم كـ 'icon'
+        formData.append('icon', currentIconPath); 
+    }
+
     try {
-       const response = await fetch(`https://barberhaircut-production.up.railway.app/api/admin/package/${id}`, {
+        // إرسال الطلب إلى مسار التعديل في الواجهة الخلفية
+        const response = await fetch(`https://barberhaircut-production.up.railway.app/api/admin/package/${id}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name, description, price, icon })
+            body: formData 
         });
 
         if (response.ok) {
             alert("Package updated successfully!");
             document.getElementById('edit-package-modal').style.display = 'none';
-            fetchPackages();
+            fetchPackages(); // تحديث القائمة
         } else {
             const error = await response.json();
             alert(`Error updating package: ${error.message}`);
