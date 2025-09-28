@@ -136,16 +136,87 @@ function renderPackages(packages, isAdmin) {
 }
 
 // Show and fill the edit modal
+// Function to fetch packages from the database (تجنباً للتكرار، افترض أن الدوال الأخرى صحيحة)
+
+// ... (الدوال الأخرى: fetchPackages, addToCart, renderPackages, handleAddPackage) ...
+
+// Show and fill the edit modal
 function showEditModal(packageToEdit) {
     const modal = document.getElementById('edit-package-modal');
     modal.style.display = 'flex';
+    
+    // ملء الحقول بالبيانات الحالية
     document.getElementById('edit-package-id').value = packageToEdit._id;
     document.getElementById('edit-package-name').value = packageToEdit.name;
     document.getElementById('edit-package-description').value = packageToEdit.description;
     document.getElementById('edit-package-price').value = packageToEdit.price;
-    document.getElementById('edit-package-icon').value = packageToEdit.icon;
+    
+    // حفظ المسار الحالي للصورة في حقل مخفي
+    document.getElementById('edit-package-current-icon').value = packageToEdit.icon; 
+
+    // مسح حقل تحميل الملف (لأننا لا نستطيع تعبئته)
+    document.getElementById('edit-package-icon-file').value = null; 
 }
 
+
+// Function to handle the form submission for editing a package
+async function handleEditPackage(event) {
+    event.preventDefault();
+    const form = document.getElementById('edit-package-form');
+    
+    const id = form.querySelector('#edit-package-id').value;
+    const name = form.querySelector('#edit-package-name').value;
+    const description = form.querySelector('#edit-package-description').value;
+    const price = form.querySelector('#edit-package-price').value;
+    const iconFile = form.querySelector('#edit-package-icon-file').files[0]; // الملف الجديد
+    const currentIconPath = form.querySelector('#edit-package-current-icon').value; // المسار القديم
+
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+        alert("You must be logged in as an admin to edit a package.");
+        return;
+    }
+
+    // إنشاء كائن FormData لإرسال الملفات والبيانات
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('description', description);
+    formData.append('price', price);
+    
+    if (iconFile) {
+        // إذا تم اختيار ملف جديد، أرسله
+        formData.append('icon', iconFile);
+    } else {
+        // إذا لم يتم اختيار ملف جديد، أرسل المسار القديم كـ 'icon' (ضروري لمعالج الـ Backend)
+        formData.append('icon', currentIconPath); 
+    }
+
+    try {
+        // إرسال الطلب إلى مسار التعديل في الواجهة الخلفية
+        const response = await fetch(`https://barberhaircut-production.up.railway.app/api/admin/package/${id}`, {
+            method: 'PUT',
+            headers: {
+                // لا تحدد 'Content-Type'، المتصفح سيتولى أمر FormData
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData 
+        });
+
+        if (response.ok) {
+            alert("Package updated successfully!");
+            document.getElementById('edit-package-modal').style.display = 'none';
+            fetchPackages(); // تحديث القائمة
+        } else {
+            const error = await response.json();
+            alert(`Error updating package: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Failed to update package:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+// ... (باقي الدوال: handleDeletePackage, checkAdminStatus, DOMContentLoaded) ...
 // Function to handle the form submission for adding a new package
 async function handleAddPackage(event) {
     event.preventDefault();

@@ -35,10 +35,14 @@ const addPackage = async (req,res)=>{
 const updatePackage = async (req, res) => {
     const { id } = req.params;
     const {name, description, price, icon } = req.body;
+    let newIconPath = icon;
+    if(req.file){
+        newIconPath=req.file.path;
+    }
     try {
         const updatedPackage = await Package.findByIdAndUpdate(
             id,
-            { name, description, price, icon },
+            { name, description, price, icon:newIconPath },
             { new: true, runValidators: true }
         );
 

@@ -43,7 +43,7 @@ router.get("/booking/today",isAdminmiddleware,async(req,res)=>{
 })
 
 router.post("/package", isAdminmiddleware,upload.single('icon') ,packageController.addPackage);
-router.put("/package/:id", isAdminmiddleware, packageController.updatePackage);
+router.put("/package/:id", isAdminmiddleware, upload.single('icon'), packageController.updatePackage);
 router.delete("/package/:id", isAdminmiddleware, packageController.deletePackage)
 
 

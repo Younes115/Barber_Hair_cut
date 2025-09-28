@@ -47,19 +47,25 @@
         </div>
     </div>
 
-    <div id="edit-package-modal" class="form-modal">
-        <div class="form-container">
-            <h3>Edit Package</h3>
-            <form id="edit-package-form">
-                <input type="hidden" id="edit-package-id">
-                <input type="text" id="edit-package-name" placeholder="Package Name" required>
-                <input type="text" id="edit-package-description" placeholder="Description" required>
-                <input type="number" id="edit-package-price" placeholder="Price" required>
-                <input type="text" id="edit-package-icon" placeholder="Icon URL">
-                <button type="submit" class="btn">Save Changes</button>
-                <button type="button" class="btn" id="cancel-edit-btn">Cancel</button>
-            </form>
-        </div>
+   <div id="edit-package-modal" class="form-modal">
+    <div class="form-container">
+        <h3>Edit Package</h3>
+        <form id="edit-package-form">
+            <input type="hidden" id="edit-package-id">
+            <input type="text" id="edit-package-name" placeholder="Package Name" required>
+            <input type="text" id="edit-package-description" placeholder="Description" required>
+            <input type="number" id="edit-package-price" placeholder="Price" required>
+            
+            <label for="edit-package-icon-file" style="display:block; margin-top:10px;">Change Icon (Optional):</label>
+            <input type="file" id="edit-package-icon-file" accept="image/*">
+            
+            <input type="hidden" id="edit-package-current-icon"> 
+
+            <button type="submit" class="btn">Save Changes</button>
+            <button type="button" class="btn" id="cancel-edit-btn">Cancel</button>
+        </form>
+    </div>
+</div>
     </div>
 
     <script src="./package.js"></script>
