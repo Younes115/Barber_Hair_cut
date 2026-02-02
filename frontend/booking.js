@@ -1,3 +1,8 @@
+
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000' 
+    : 'https://barberhaircut-production.up.railway.app';
+
 // Function to render the cart on the booking page
 function renderCart() {
     const cartItemsList = document.getElementById('cart-items-list');
@@ -17,7 +22,7 @@ function renderCart() {
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'Remove';
             removeBtn.className = 'remove-btn';
-            removeBtn.dataset.serviceId = service._id; // استخدم _id للباكدجات من قاعدة البيانات
+            removeBtn.dataset.serviceId = service._id; 
             listItem.appendChild(removeBtn);
             cartItemsList.appendChild(listItem);
             totalPrice += service.price;
@@ -33,102 +38,82 @@ function renderCart() {
     });
 }
 
-// Function to remove a service from the cart
 function removeFromCart(serviceId) {
     let currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-    currentCart = currentCart.filter(service => service._id !== serviceId);
+    currentCart = currentCart.filter(item => item._id !== serviceId);
     localStorage.setItem('cart', JSON.stringify(currentCart));
     renderCart();
 }
 
-// Function to handle the booking form submission
+function generateTimeOptions() {
+    const timeSelect = document.getElementById('time');
+    if (!timeSelect) return;
+    timeSelect.innerHTML = '';
+    for (let hour = 10; hour <= 22; hour++) {
+        const timeValue = `${hour}:00`;
+        const option = document.createElement('option');
+        option.value = timeValue;
+        option.textContent = timeValue;
+        timeSelect.appendChild(option);
+    }
+}
+
+
 async function handleBookingForm(event) {
     event.preventDefault();
-    const form = document.getElementById('booking-form');
-    const name = form.querySelector('#name').value;
-    const email = form.querySelector('#email').value;
-    const date = form.querySelector('#date').value;
-    const time = form.querySelector('#time').value;
-    const phone = form.querySelector('#phone').value;
-    const token = localStorage.getItem('userToken');
 
+    const token = localStorage.getItem('userToken');
     if (!token) {
-        alert("Please log in to make a booking.");
+        alert('You must be logged in to book.');
         return;
     }
-    const services = JSON.parse(localStorage.getItem('cart')) || [];
-    if (services.length === 0) {
-        alert("Your cart is empty. Please add services before booking.");
+
+    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (currentCart.length === 0) {
+        alert('Your cart is empty. Please add services before booking.');
         return;
     }
+
+    const bookingData = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        services: currentCart.map(item => item._id),
+        totalPrice: parseFloat(document.getElementById('cart-total-price').textContent)
+    };
 
     try {
-        const response = await fetch('https://barberhaircut-production.up.railway.app/api/booking', {
+        // استخدام الرابط الديناميكي هنا
+        const response = await fetch(`${API_BASE_URL}/api/booking`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name, email, date, time, phone, services }),
+            body: JSON.stringify(bookingData)
         });
 
-        const result = await response.json();
         if (response.ok) {
-            alert(result.message);
-            form.reset();
+            alert('Booking successful!');
             localStorage.removeItem('cart');
-            renderCart();
-            window.location.href = './index.html'; // العودة للصفحة الرئيسية
+            window.location.href = './index.html';
         } else {
-            alert(`Error: ${result.message}`);
+            const errorData = await response.json();
+            alert(`Booking failed: ${errorData.message}`);
         }
     } catch (error) {
-        console.error('Failed to submit booking:', error);
-        alert('An error occurred. Please try again.');
+        console.error('Error submitting booking:', error);
+        alert('An error occurred. Please try again later.');
     }
 }
 
-// Function to generate time options for the dropdown
-function generateTimeOptions() {
-    const timeSelect = document.getElementById('time');
-    if (!timeSelect) return;
-
-    timeSelect.innerHTML = '';
-    const startHour = 10;
-    const endHour = 26; // 2 AM of the next day (24 + 2)
-    const interval = 30;
-
-    for (let h = startHour; h < endHour; h++) {
-        for (let m = 0; m < 60; m += interval) {
-            let displayHour = h;
-            const period = h >= 12 && h < 24 ? 'PM' : 'AM';
-            
-            if (displayHour > 12) {
-                displayHour -= 12;
-            } else if (displayHour === 0 || displayHour === 24) {
-                displayHour = 12;
-            }
-
-            const minute = String(m).padStart(2, '0');
-            const displayTime = `${displayHour}:${minute} ${period}`;
-            const valueTime = `${String(h % 24).padStart(2, '0')}:${minute}`;
-            
-            const option = document.createElement('option');
-            option.value = valueTime;
-            option.textContent = displayTime;
-            timeSelect.appendChild(option);
-        }
-    }
-}
-
-// دالة لمعالجة تسجيل الخروج
 function logout() {
     localStorage.removeItem('userToken');
     alert('Logged out successfully!');
     window.location.href = './index.html';
 }
 
-// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة
 function checkLoginStatus() {
     const token = localStorage.getItem('userToken');
     const logoutContainer = document.getElementById('logout-container');
@@ -141,10 +126,7 @@ function checkLoginStatus() {
     return token ? true : false;
 }
 
-
-// Main DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    // التحقق من تسجيل الدخول أولاً
     if (!checkLoginStatus()) {
         alert('Please log in to view this page.');
         window.location.href = './index.html';
@@ -159,14 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
         bookingForm.addEventListener('submit', handleBookingForm);
     }
 
-    // ربط زر تسجيل الخروج وتفعيل قائمة الهمبرغر
     const logoutButton = document.getElementById('logout-btn');
     if (logoutButton) {
         logoutButton.addEventListener('click', logout);
     }
+    
     const menuToggle = document.getElementById('mobile-menu');
     const navMenu = document.querySelector('#navbar ul');
-
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('open');

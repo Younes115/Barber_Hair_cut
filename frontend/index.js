@@ -1,10 +1,16 @@
-// Function for Google Sign-In
+// 1. تحديد رابط السيرفر الأساسي بناءً على مكان التشغيل
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000' 
+    : 'https://barberhaircut-production.up.railway.app';
+
+// دالة تسجيل الدخول عبر جوجل
 function onSignIn(response) {
     const id_token = response.credential;
     
     console.log("ID Token:", id_token);
 
-    fetch('https://barberhaircut-production.up.railway.app/api/auth/google', {
+    // استخدام الرابط الديناميكي للإرسال للباك آند
+    fetch(`${API_BASE_URL}/api/auth/google`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -24,7 +30,7 @@ function onSignIn(response) {
         if (data.jwtToken) {
             localStorage.setItem('userToken', data.jwtToken);
             alert('Login successful!');
-            window.location.reload(); // إعادة تحميل الصفحة بعد تسجيل الدخول
+            window.location.reload(); 
         } else {
             alert('Login failed. No token received from server.');
         }
@@ -35,10 +41,11 @@ function onSignIn(response) {
     });
 }
 
-// Function to initialize Google Sign-In and fetch the client ID
+// دالة تهيئة زر جوجل وجلب الـ Client ID
 async function initializeGoogleSignIn() {
     try {
-        const response = await fetch('https://barberhaircut-production.up.railway.app/config');
+        // جلب الإعدادات من السيرفر المحلي أو المرفوع
+        const response = await fetch(`${API_BASE_URL}/config`);
         if (!response.ok) {
             throw new Error('Failed to fetch Google Client ID from server.');
         }
@@ -69,14 +76,14 @@ async function initializeGoogleSignIn() {
     }
 }
 
-// دالة لمعالجة تسجيل الخروج (مدمجة)
+// دالة تسجيل الخروج
 function logout() {
     localStorage.removeItem('userToken');
     alert('Logged out successfully!');
     window.location.href = './index.html';
 }
 
-// دالة للتحقق من حالة تسجيل الدخول وتحديث الواجهة (مدمجة)
+// التحقق من حالة الدخول وتحديث شكل الواجهة
 function checkLoginStatus() {
     const token = localStorage.getItem('userToken');
     const loginButton = document.getElementById('google-login-button');
@@ -91,26 +98,27 @@ function checkLoginStatus() {
     }
 }
 
-// Function to check user role and display admin buttons
+// التحقق مما إذا كان المستخدم "أدمن" لإظهار أزرار التحكم
 async function checkAdminStatus() {
     const token = localStorage.getItem('userToken');
     if (!token) return;
 
     try {
-        const response = await fetch('https://barberhaircut-production.up.railway.app/api/auth/profile', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const user = await response.json();
         if (user && user.role === 'admin') {
-            document.getElementById('admin-bookings-btn-container').style.display = 'block';
+            const adminContainer = document.getElementById('admin-bookings-btn-container');
+            if (adminContainer) adminContainer.style.display = 'block';
         }
     } catch (error) {
         console.error("Failed to check admin status:", error);
     }
 }
 
-// Function to fetch and display today's bookings
+// جلب حجوزات اليوم (خاص بالأدمن)
 async function getDailyBookings() {
     const token = localStorage.getItem('userToken');
     if (!token) {
@@ -119,7 +127,7 @@ async function getDailyBookings() {
     }
 
     try {
-        const response = await fetch('https://barberhaircut-production.up.railway.app/api/admin/booking/today', {
+        const response = await fetch(`${API_BASE_URL}/api/admin/booking/today`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -128,26 +136,21 @@ async function getDailyBookings() {
             throw new Error(error.message);
         }
         const bookings = await response.json();
-        
         localStorage.setItem('dailyBookings', JSON.stringify(bookings));
-        
         window.location.href = './daily-bookings.html';
-        
     } catch (error) {
         alert("Error fetching bookings: " + error.message);
     }
 }
 
-// دمج كل الـ Event Listeners في كتلة واحدة
+// تشغيل الوظائف عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. تفعيل تسجيل الدخول و التحقق من حالة المستخدم
     if (document.getElementById("google-login-button")) {
         initializeGoogleSignIn();
     }
     checkLoginStatus(); 
     checkAdminStatus(); 
     
-    // 2. ربط زر تسجيل الخروج وزر حجوزات اليوم
     const logoutButton = document.getElementById('logout-btn');
     if (logoutButton) {
         logoutButton.addEventListener('click', logout);
@@ -158,10 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
         viewBookingsBtn.addEventListener('click', getDailyBookings);
     }
     
-    // 3. تفعيل قائمة الهمبرغر
+    // قائمة الموبايل (Hamburger Menu)
     const menuToggle = document.getElementById('mobile-menu');
     const navMenu = document.querySelector('#navbar ul');
-
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('open');
