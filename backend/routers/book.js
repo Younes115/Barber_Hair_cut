@@ -2,15 +2,12 @@ const express = require("express");
 const router = express.Router();
 const booking = require("../model/booking");
 const verifyToken = require("../middleware/verifytoken");
+const { validateBooking } = require("../middleware/validateBooking");
 
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", verifyToken, validateBooking, async (req, res) => {
     const { name, email, date, time, phone, services } = req.body;
     const userId = req.userId;
 
-    // Corrected validation check for required fields and empty services array
-    if (!name || !email || !date || !time || !phone || !Array.isArray(services) || services.length === 0) {
-        return res.status(400).json({ message: "All fields are required" });
-    }
     try {
         const bookingCount = await booking.countDocuments({
             date: new Date(date),

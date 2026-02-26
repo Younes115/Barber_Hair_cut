@@ -140,17 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const token = localStorage.getItem('userToken');
             
-            const formData = new FormData();
-            formData.append('name', document.getElementById('add-package-name').value);
-            formData.append('description', document.getElementById('add-package-description').value);
-            formData.append('price', document.getElementById('add-package-price').value);
-            formData.append('icon', document.getElementById('add-package-icon').files[0]);
+            const payload = {
+                name: document.getElementById('add-package-name').value,
+                description: document.getElementById('add-package-description').value,
+                price: document.getElementById('add-package-price').value
+            };
 
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/package`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {

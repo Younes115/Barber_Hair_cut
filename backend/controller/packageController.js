@@ -11,7 +11,7 @@ const getPackages = async (req, res) => {
 };
 
 const addPackage = async (req,res)=>{
-    const {name,description,price,icon}=req.body;
+    const {name,description,price}=req.body;
         if (!name || !description || !price) {
         return res.status(400).send('Name, description, and price are required.');
         }
@@ -19,8 +19,7 @@ const addPackage = async (req,res)=>{
         const newPackage= new Package({
             name,
             description,
-            price,
-            icon:req.file.path
+            price
         })
 
         await newPackage.save();
@@ -34,15 +33,11 @@ const addPackage = async (req,res)=>{
 
 const updatePackage = async (req, res) => {
     const { id } = req.params;
-    const {name, description, price, icon } = req.body;
-    let newIconPath = icon;
-    if(req.file){
-        newIconPath=req.file.path;
-    }
+    const { name, description, price } = req.body;
     try {
         const updatedPackage = await Package.findByIdAndUpdate(
             id,
-            { name, description, price, icon:newIconPath },
+            { name, description, price },
             { new: true, runValidators: true }
         );
 

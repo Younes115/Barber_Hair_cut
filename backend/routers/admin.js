@@ -1,21 +1,9 @@
 const express = require ("express");
-const multer = require("multer");
 const router =  express.Router();
 
 const isAdminmiddleware = require("../middleware/isAdmin");
 const booking =require("../model/booking");
 const packageController= require("../controller/packageController");
-
-const storge =multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,"uploads/icons");
-    },
-    filename:function(req,file,cb){
-        cb(null,Date.now()+"-"+file.originalname);
-    }
-});
-
-const upload = multer({storage:storge});
 
 
 
@@ -42,8 +30,8 @@ router.get("/booking/today",isAdminmiddleware,async(req,res)=>{
 
 })
 
-router.post("/package", isAdminmiddleware,upload.single('icon') ,packageController.addPackage);
-router.put("/package/:id", isAdminmiddleware, upload.single('icon'), packageController.updatePackage);
+router.post("/package", isAdminmiddleware, packageController.addPackage);
+router.put("/package/:id", isAdminmiddleware, packageController.updatePackage);
 router.delete("/package/:id", isAdminmiddleware, packageController.deletePackage)
 
 
