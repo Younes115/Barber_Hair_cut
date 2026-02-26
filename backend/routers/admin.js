@@ -1,13 +1,14 @@
 const express = require ("express");
 const router =  express.Router();
 
+const verifyToken = require("../middleware/verifytoken");
 const isAdminmiddleware = require("../middleware/isAdmin");
 const booking =require("../model/booking");
 const packageController= require("../controller/packageController");
 
 
 
-router.get("/booking/today",isAdminmiddleware,async(req,res)=>{
+router.get("/booking/today", verifyToken, isAdminmiddleware, async(req,res)=>{
     try {
         const today = new Date();
         today.setHours(0,0,0,0);
@@ -30,9 +31,9 @@ router.get("/booking/today",isAdminmiddleware,async(req,res)=>{
 
 })
 
-router.post("/package", isAdminmiddleware, packageController.addPackage);
-router.put("/package/:id", isAdminmiddleware, packageController.updatePackage);
-router.delete("/package/:id", isAdminmiddleware, packageController.deletePackage)
+router.post("/package", verifyToken, isAdminmiddleware, packageController.addPackage);
+router.put("/package/:id", verifyToken, isAdminmiddleware, packageController.updatePackage);
+router.delete("/package/:id", verifyToken, isAdminmiddleware, packageController.deletePackage)
 
 
 

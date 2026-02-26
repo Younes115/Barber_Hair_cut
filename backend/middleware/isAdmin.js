@@ -1,18 +1,13 @@
-const jwt = require("jsonwebtoken");
-
+// Role-check middleware — must run AFTER verifyToken so req.user is set.
 module.exports = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1]; // تصحيح الأخطاء
-    if (!token) {
-        return res.status(401).send('No token provided.');
+    // If verifyToken didn't run or the token lacked user info
+    if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
     }
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // تصحيح الاسم
-        if (decoded.role !== "admin") {
-            return res.status(403).send("Access denied. Admin role required");
-        }
-        req.user = decoded;
-        next();
-    } catch (err) {
-        res.status(401).send('Invalid token.');
+
+    if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Access denied. Admin role required" });
     }
-}
+
+    next();
+};
