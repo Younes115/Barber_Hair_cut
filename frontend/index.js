@@ -1,7 +1,5 @@
 // 1. تحديد رابط السيرفر الأساسي بناءً على مكان التشغيل
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000' 
-    : 'https://barberhaircut-production.up.railway.app';
+const API_BASE_URL = '';
 
 // دالة تسجيل الدخول عبر جوجل
 function onSignIn(response) {
@@ -57,6 +55,14 @@ async function initializeGoogleSignIn() {
             return;
         }
 
+        // Guard: ensure Google Identity Services script has loaded
+        if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+            console.error('Google Identity Services script not loaded. Check your internet connection or ad-blocker.');
+            const container = document.getElementById('google-login-button');
+            if (container) container.innerHTML = '<p style="color:#f0b400;">Google login unavailable. Please refresh or check your connection.</p>';
+            return;
+        }
+
         google.accounts.id.initialize({
             client_id: googleClientId,
             callback: onSignIn
@@ -73,6 +79,8 @@ async function initializeGoogleSignIn() {
         );
     } catch (error) {
         console.error('Initialization failed:', error);
+        const container = document.getElementById('google-login-button');
+        if (container) container.innerHTML = '<p style="color:#f0b400;">Failed to load Google Sign-In. Please refresh the page.</p>';
     }
 }
 

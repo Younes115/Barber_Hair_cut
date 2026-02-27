@@ -1,7 +1,5 @@
 // 1. Dynamic API Base URL detection
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000' 
-    : 'https://barberhaircut-production.up.railway.app';
+const API_BASE_URL = '';
 
 // Global cart variable
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -75,11 +73,28 @@ function renderPackages(packages, isAdmin) {
     packages.forEach(pkg => {
         const packageCard = document.createElement('div');
         packageCard.className = 'package-card';
+
+        // Admin action buttons (Edit / Delete)
+        const adminActions = isAdmin ? `
+            <div class="admin-actions">
+                <button class="edit-package-btn" data-id="${pkg._id}" data-name="${pkg.name}" data-description="${pkg.description}" data-price="${pkg.price}">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </button>
+                <button class="delete-package-btn" data-id="${pkg._id}" data-name="${pkg.name}">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </button>
+            </div>
+        ` : '';
+
         packageCard.innerHTML = `
-            <h3>${pkg.name}</h3>
+            <div class="package-header">
+                <i class="fa-solid fa-scissors package-icon"></i>
+                <h3>${pkg.name}</h3>
+            </div>
             <p>${pkg.description}</p>
-            <span>${pkg.price} EGP</span>
+            <span class="package-price">${pkg.price} EGP</span>
             <button class="book-btn" data-id="${pkg._id}" data-name="${pkg.name}" data-price="${pkg.price}">Add to Cart</button>
+            ${adminActions}
         `;
         packageContainer.appendChild(packageCard);
     });
@@ -95,6 +110,48 @@ function renderPackages(packages, isAdmin) {
             addToCart(service);
         });
     });
+
+    // Admin: attach Edit button handlers
+    if (isAdmin) {
+        document.querySelectorAll('.edit-package-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const btn = e.target.closest('.edit-package-btn');
+                document.getElementById('edit-package-id').value = btn.dataset.id;
+                document.getElementById('edit-package-name').value = btn.dataset.name;
+                document.getElementById('edit-package-description').value = btn.dataset.description;
+                document.getElementById('edit-package-price').value = btn.dataset.price;
+                document.getElementById('edit-package-modal').style.display = 'block';
+            });
+        });
+
+        document.querySelectorAll('.delete-package-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.delete-package-btn');
+                const packageId = btn.dataset.id;
+                const packageName = btn.dataset.name;
+
+                if (!confirm(`Are you sure you want to delete "${packageName}"?`)) return;
+
+                const token = localStorage.getItem('userToken');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/admin/package/${packageId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        alert('Package deleted successfully!');
+                        fetchPackages(); // refresh the list
+                    } else {
+                        const error = await response.json();
+                        alert('Delete failed: ' + (error.message || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error('Error deleting package:', err);
+                    alert('Failed to delete package. Please try again.');
+                }
+            });
+        });
+    }
 }
 
 // Add selected package to local storage cart
@@ -131,6 +188,56 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cancelAddBtn) {
         cancelAddBtn.addEventListener('click', () => {
             addPackageModal.style.display = 'none';
+        });
+    }
+
+    // --- Edit Package Modal ---
+    const editPackageModal = document.getElementById('edit-package-modal');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const editPackageForm = document.getElementById('edit-package-form');
+
+    // Close Edit Package Modal
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', () => {
+            editPackageModal.style.display = 'none';
+        });
+    }
+
+    // Handle Editing Package (PUT)
+    if (editPackageForm) {
+        editPackageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('userToken');
+            const packageId = document.getElementById('edit-package-id').value;
+
+            const payload = {
+                name: document.getElementById('edit-package-name').value,
+                description: document.getElementById('edit-package-description').value,
+                price: document.getElementById('edit-package-price').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/package/${packageId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('Package updated successfully!');
+                    editPackageModal.style.display = 'none';
+                    fetchPackages(); // refresh the list
+                } else {
+                    const error = await response.json();
+                    alert('Update failed: ' + (error.message || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error updating package:', err);
+                alert('Failed to update package. Please try again.');
+            }
         });
     }
 

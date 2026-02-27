@@ -1,7 +1,5 @@
 
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000' 
-    : 'https://barberhaircut-production.up.railway.app';
+const API_BASE_URL = '';
 
 // Function to render the cart on the booking page
 function renderCart() {
@@ -74,17 +72,41 @@ async function handleBookingForm(event) {
         return;
     }
 
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+
+    // Client-side validation helpers
+    if (!name || name.length < 2) {
+        alert('Please enter your name (at least 2 characters).');
+        return;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    if (!phone || !/^\d{8,15}$/.test(phone)) {
+        alert('Phone must contain only digits (8-15 digits). No spaces, dashes, or +.');
+        return;
+    }
+    if (!date) {
+        alert('Please select a date.');
+        return;
+    }
+
     const bookingData = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        services: currentCart.map(item => item._id),
+        name,
+        email,
+        phone,
+        date,
+        time,
+        services: currentCart.map(item => ({ name: item.name, price: item.price })),
         totalPrice: parseFloat(document.getElementById('cart-total-price').textContent)
     };
 
     try {
-        // استخدام الرابط الديناميكي هنا
         const response = await fetch(`${API_BASE_URL}/api/booking`, {
             method: 'POST',
             headers: {
@@ -94,13 +116,20 @@ async function handleBookingForm(event) {
             body: JSON.stringify(bookingData)
         });
 
+        const data = await response.json();
+
         if (response.ok) {
             alert('Booking successful!');
             localStorage.removeItem('cart');
             window.location.href = './index.html';
         } else {
-            const errorData = await response.json();
-            alert(`Booking failed: ${errorData.message}`);
+            // Show field-level validation errors if available
+            if (data.errors && Array.isArray(data.errors)) {
+                const details = data.errors.map(e => `• ${e.field}: ${e.message}`).join('\n');
+                alert(`Booking failed:\n${details}`);
+            } else {
+                alert(`Booking failed: ${data.message || 'Unknown error'}`);
+            }
         }
     } catch (error) {
         console.error('Error submitting booking:', error);
@@ -135,6 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderCart();
     generateTimeOptions();
+
+    // Set date input min to today to prevent past dates
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
     
     const bookingForm = document.getElementById('booking-form');
     if (bookingForm) {
