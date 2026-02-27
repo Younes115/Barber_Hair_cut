@@ -13,7 +13,7 @@ const jwtSecret = process.env.JWT_SECRET;
 router.post("/google", async (req, res) => {
     const { token } = req.body;
     if (!token) {
-        return res.status(500).send("Google token is required");
+        return res.status(500).json({ message: "Google token is required" });
     }
 
     try {
@@ -43,7 +43,7 @@ router.post("/google", async (req, res) => {
 
     } catch (err) {
         console.error('Authentication Error:', err);
-        res.status(401).send("Authentication failed");
+        res.status(401).json({ message: "Authentication failed" });
     }
 });
 

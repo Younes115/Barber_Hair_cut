@@ -15,7 +15,8 @@ const app = express();
 
 // --- CORS: allow production domain + any localhost origin for dev ---
 const allowedOrigins = [
-    'https://barberhaircut-production.up.railway.app'
+    'https://barberhaircut-production.up.railway.app',
+    'https://barbersystem1-qdz8war3.b4a.run'
 ];
 
 app.use(cors({
